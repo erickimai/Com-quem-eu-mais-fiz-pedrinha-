@@ -2,7 +2,6 @@ const express = require('express');
 const port = process.env.PORT || 3000;
 const axios = require('axios');
 const app = express();
-const characterId = 115039442;
 const dungeonIds = [6932, 7672, 13982, 14032, 13954, 8079, 14063, 5965];
 const data = {};
 
@@ -22,7 +21,7 @@ async function fetchRunDetails(keystoneRunId) {
   return response.data.keystoneRun.roster;
 }
 
-async function main() {
+async function main(characterId) {
   for (const dungeonId of dungeonIds) {
     const runs = await fetchRuns(characterId, dungeonId);
     for (const run of runs) {
@@ -53,7 +52,8 @@ app.get('/', async (req, res) => {
   res.render('index');
 });
 
-app.get('/data', async (req, res) => {
-  const ret = await main();
+app.get('/:characterId', async (req, res) => {
+  const characterId = req.query.characterId;
+  const ret = await main(characterId);
   res.render('data', { data: ret });
 });

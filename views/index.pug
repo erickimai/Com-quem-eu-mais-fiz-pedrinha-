@@ -1,11 +1,11 @@
 doctype html
 html
   head
-    title My Data
+    title Character Runs
   body
-    h1 Top amigos
-    form
-        input(type='text' id='characterId' name='characterId' placeholder='Enter character ID')
-        button(type='submit' onclick='window.location.href="/data"') Show Data
+    h1 Character ID
+    form(action='/data', method='GET')
+      input(type='text', name='characterId')
+      input(type='submit', value='Submit')
 
 
