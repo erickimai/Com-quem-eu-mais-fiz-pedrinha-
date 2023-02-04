@@ -1,9 +1,16 @@
 const express = require('express');
+const port = process.env.PORT || 3000;
 const axios = require('axios');
 const app = express();
 const characterId = 115039442;
 const dungeonIds = [6932, 7672, 13982, 14032, 13954, 8079, 14063, 5965];
 const data = {};
+
+async function sortObjectbyValue(obj={},asc=true){ 
+  const ret = {};
+  Object.keys(obj).sort((a,b) => obj[asc?b:a]-obj[asc?a:b]).forEach(s => ret[s] = obj[s]);
+  return ret
+}
 
 async function fetchRuns(characterId, dungeonId) {
   const response = await axios.get(`https://raider.io/api/characters/mythic-plus-runs?season=season-df-1&characterId=${characterId}&dungeonId=${dungeonId}`);
@@ -30,14 +37,23 @@ async function main() {
       }
     }
   }
+  const sortedData = sortObjectbyValue(data);
+  return sortedData;
 }
 
-app.get('/', async (req, res) => {
-    await main();
-    res.send(data);
-});
+app.use(express.static('public'));
 
-const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
+});
+
+app.set('view engine', 'pug');
+
+app.get('/', async (req, res) => {
+  res.render('index');
+});
+
+app.get('/data', async (req, res) => {
+  const ret = await main();
+  res.render('data', { data: ret });
 });
