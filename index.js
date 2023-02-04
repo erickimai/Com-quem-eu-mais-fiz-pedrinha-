@@ -3,7 +3,6 @@ const port = process.env.PORT || 3000;
 const axios = require('axios');
 const app = express();
 const dungeonIds = [6932, 7672, 13982, 14032, 13954, 8079, 14063, 5965];
-const data = {};
 
 async function sortObjectbyValue(obj={},asc=true){ 
   const ret = {};
@@ -22,6 +21,7 @@ async function fetchRunDetails(keystoneRunId) {
 }
 
 async function main(characterId) {
+  const data = {};
   for (const dungeonId of dungeonIds) {
     const runs = await fetchRuns(characterId, dungeonId);
     for (const run of runs) {
