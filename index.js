@@ -12,6 +12,13 @@ async function sortObjectbyValue(obj = {}, asc = true) {
   return ret;
 }
 
+async function fetchId(characterName) {
+  const response = await axios.get(
+    `https://raider.io/api/search-advanced?type=character&name[0][contains]=${characterName}&realm[0][eq]=US-Stormrage&limit=1`
+  );
+  return response.data.matches[0].data.id;
+}
+
 async function fetchRuns(characterId, dungeonId) {
   const response = await axios.get(
     `https://raider.io/api/characters/mythic-plus-runs?season=season-df-1&characterId=${characterId}&dungeonId=${dungeonId}`
@@ -26,18 +33,21 @@ async function fetchRunDetails(keystoneRunId) {
   return response.data.keystoneRun.roster;
 }
 
-async function main(characterId) {
+async function main(characterName) {
   const data = {};
+  const characterId = await fetchId(characterName);
   for (const dungeonId of dungeonIds) {
     const runs = await fetchRuns(characterId, dungeonId);
     for (const run of runs) {
       const keystoneRunId = run.summary.keystone_run_id;
       const roster = await fetchRunDetails(keystoneRunId);
       for (const character of roster) {
-        if (!data[character.character.name]) {
-          data[character.character.name] = 1;
-        } else {
-          data[character.character.name] += 1;
+        if (character.character.name !== characterName) {
+          if (!data[character.character.name]) {
+            data[character.character.name] = 1;
+          } else {
+            data[character.character.name] += 1;
+          }
         }
       }
     }
@@ -59,11 +69,10 @@ app.get("/", async (req, res) => {
   res.render("index");
 });
 
-app.get("/:characterId", async (req, res) => {
-  const characterId = req.query.characterId;
-  if (characterId !== undefined) {
-    const ret = await main(characterId);
-    console.log(ret);
-    res.render("data", { data: ret });
+app.get("/:characterName", async (req, res) => {
+  const characterName = req.query.characterName;
+  if (characterName !== undefined) {
+    const ret = await main(characterName);
+    res.render("data", { data: ret, title: `Top amigos do ${characterName}` });
   }
 });

@@ -1,9 +1,10 @@
 doctype html
 html
   head
-    title Character Runs
+    title Top amigos
+    link(rel='stylesheet', href='/style.css')
   body
-    h1 Character ID
+    h1 Top Amigos
     form(action='/data', method='GET')
-      input(type='text', name='characterId')
+      input(type='text', name='characterName', placeholder='Character Name (Stormrage)')
       input(type='submit', value='Submit')
