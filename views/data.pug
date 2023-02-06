@@ -15,5 +15,6 @@ html
         tbody
           each val, key in data
             tr
-              td= key
+              td
+                a(href='/data?characterName=' + key)= key
               td= val
